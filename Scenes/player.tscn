@@ -392,10 +392,10 @@ motion_mode = 1
 script = ExtResource("1_dvkjk")
 max_speed = 50.0
 acceleration = 2.0
-dash_distance = 50
-dash_timer = NodePath("Timer")
+dash_distance = 500
+dash_timer = NodePath("Dash_Timer")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1pbhn")
 animation = &"idle_down"
 autoplay = "idle_right"
@@ -404,5 +404,5 @@ script = ExtResource("4_vuwhx")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_m8xof")
 
-[node name="Timer" type="Timer" parent="."]
+[node name="Dash_Timer" type="Timer" parent="."]
 one_shot = true

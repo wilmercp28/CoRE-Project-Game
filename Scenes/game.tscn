@@ -1,8 +1,22 @@
-[gd_scene load_steps=2 format=3 uid="uid://oioiq0y8nmuk"]
+[gd_scene load_steps=3 format=3 uid="uid://oioiq0y8nmuk"]
 
 [ext_resource type="PackedScene" uid="uid://b5xql1kfiyvxu" path="res://Scenes/player.tscn" id="1_mvte5"]
+[ext_resource type="Texture2D" uid="uid://cgdgk5le8qbqa" path="res://icon.svg" id="2_m2lpe"]
 
 [node name="Game" type="Node2D"]
 
-[node name="CharacterBody2D" parent="." instance=ExtResource("1_mvte5")]
-position = Vector2(321, 262)
+[node name="Player" parent="." instance=ExtResource("1_mvte5")]
+
+[node name="Camara" type="Camera2D" parent="Player"]
+
+[node name="Icon" type="Sprite2D" parent="."]
+position = Vector2(418, -161)
+texture = ExtResource("2_m2lpe")
+
+[node name="Icon2" type="Sprite2D" parent="."]
+position = Vector2(-602, -216)
+texture = ExtResource("2_m2lpe")
+
+[node name="Icon3" type="Sprite2D" parent="."]
+position = Vector2(1010, -198)
+texture = ExtResource("2_m2lpe")

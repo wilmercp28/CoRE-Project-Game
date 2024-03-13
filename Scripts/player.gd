@@ -6,5 +6,4 @@ func _physics_process(delta):
 	move(delta)
 	if Input.get_action_strength("ui_accept"):
 		do_dash()
-		dash_on_cooldown = false
 	
