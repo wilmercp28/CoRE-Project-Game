@@ -390,10 +390,12 @@ size = Vector2(12, 16)
 [node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("dash_timer")]
 motion_mode = 1
 script = ExtResource("1_dvkjk")
+health = 100
 max_speed = 50.0
 acceleration = 2.0
-dash_distance = 500
-dash_timer = NodePath("Dash_Timer")
+dash_distance = 100
+dash_timer = NodePath("")
+dash_cooldown = null
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1pbhn")
@@ -403,6 +405,3 @@ script = ExtResource("4_vuwhx")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_m8xof")
-
-[node name="Dash_Timer" type="Timer" parent="."]
-one_shot = true

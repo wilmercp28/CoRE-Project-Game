@@ -6,6 +6,8 @@
 [node name="Game" type="Node2D"]
 
 [node name="Player" parent="." instance=ExtResource("1_mvte5")]
+health = null
+dash_cooldown = null
 
 [node name="Camara" type="Camera2D" parent="Player"]
 
