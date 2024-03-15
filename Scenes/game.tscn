@@ -5,9 +5,8 @@
 
 [node name="Game" type="Node2D"]
 
-[node name="Player" parent="." instance=ExtResource("1_mvte5")]
-health = null
-dash_cooldown = null
+[node name="Player" parent="." node_paths=PackedStringArray("entity_sprite") instance=ExtResource("1_mvte5")]
+entity_sprite = NodePath("")
 
 [node name="Camara" type="Camera2D" parent="Player"]
 
