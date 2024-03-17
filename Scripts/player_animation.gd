@@ -28,8 +28,9 @@ func _physics_process(delta):
 				animation_name = "run_right"
 			elif entity.direction.x < 0:
 				animation_name = "run_left"
-		animation_update()
-	else:
+		if animation != animation_name:
+			animation_update()
+	if entity.die and animation != "die":
 		animation_name = "die"
 		animation_update()
 	

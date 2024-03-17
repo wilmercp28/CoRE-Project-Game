@@ -3,12 +3,15 @@ class_name Entity
 
 
 #Attributes
+@export var target_group: String
 @export var health: int = 100
 var max_health: int
 var die = false
+var base_damage_multiplayer = 1.0
 var base_fire_rate_multiplayer = 1.0
-var base_movement_speed_multiplayer = 5
+var base_movement_speed_multiplayer = 1.0
 var damage_reduction = 0.0
+@export var hit_box:Area2D
 
  #Directions
 var direction: Vector2
@@ -24,9 +27,6 @@ var current_speed = 0.0
 var dash_on_cooldown:bool
 var dash_timer: Timer
 @export var dash_cooldown:int = 5
-var dash_trail:Line2D
-var tween: Tween
-var is_dashing = false
 
 # UI Component
 @export var health_bar: ProgressBar
@@ -62,17 +62,27 @@ func do_dash():
 		if direction != Vector2.ZERO:
 			dash_on_cooldown = true
 			var smoke = dash_smoke.instantiate()
-			var target_position = global_position + direction * (dash_distance * base_movement_speed_multiplayer)
+			var target_position = global_position + direction * dash_distance
 			smoke.global_position = global_position
 			smoke.rotation = (target_position - global_position).angle() + PI / 2
 			var tween = get_tree().create_tween()
-			tween.tween_property(self, "global_position", target_position, 0.2)
+			tween.tween_property(self, "global_position", target_position , 0.2)
+			tween.connect("finished",_on_dash_complete)
 			get_parent().add_child(smoke)
 			dash_timer.start(dash_cooldown)
 			
+func _on_dash_complete():
+	pass
+	
+func _draw():
+	var endpoint = global_position + direction * dash_distance
+	print("position",global_position)
+	draw_line(global_position, endpoint, Color.RED, 2)
+	draw_circle(endpoint,5,Color.RED)
+	draw_circle(position,5,Color.BLUE)
+		
 func _on_dash_timer_timeout():
 	dash_on_cooldown = false
-	
 func update_health_UI():
 	if health_bar != null:
 		health_bar.value
@@ -81,14 +91,21 @@ func update_health_UI():
 		health_label.text = str(health) + " / " + str(max_health)
 
 func apply_damage(amount):
-	if health > amount:
-		health -= amount
+	if damage_reduction > 0.8: damage_reduction = 0.8
+	var damage = amount * (1 - damage_reduction)
+	if health > damage:
+		health -= damage
 		update_health_UI()
 		var tween = get_tree().create_tween()
 		tween.tween_property(self,"modulate:",Color.RED,0.01)
 		tween.tween_property(self,"modulate:",Color(1,1,1,1),0.01)
 	else:
 		die = true
+		remove_entity()
+		
+func remove_entity():
+	var tween = get_tree().create_tween()
+	tween.tween_callback(queue_free).set_delay(2)
 		
 	
 	
