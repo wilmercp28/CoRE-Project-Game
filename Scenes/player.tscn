@@ -445,7 +445,7 @@ health = 200
 hit_box = NodePath("Hit_Box")
 max_speed = 50.0
 acceleration = 2.0
-dash_distance = 100
+dash_speed = 200
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1pbhn")

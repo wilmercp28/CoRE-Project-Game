@@ -7,6 +7,6 @@ func _physics_process(delta):
 		move(delta)
 		if Input.is_action_just_released("ui_accept"):
 			do_dash()
-		if Input.is_action_just_pressed("ui_accept"):
+		if Input.is_action_pressed("ui_accept"):
 			queue_redraw()
 	

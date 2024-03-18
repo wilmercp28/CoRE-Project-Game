@@ -7,7 +7,7 @@ class_name Entity
 @export var health: int = 100
 var max_health: int
 var die = false
-var base_damage_multiplayer = 1.0
+var base_damage_multiplayer = 10.0
 var base_fire_rate_multiplayer = 1.0
 var base_movement_speed_multiplayer = 1.0
 var damage_reduction = 0.0
@@ -23,10 +23,13 @@ var last_direction:Vector2
 var current_speed = 0.0
 
 # Dash
-@export var dash_distance:int
+@export var dash_speed:int
 var dash_on_cooldown:bool
 var dash_timer: Timer
+@export var dash_duration:float = 0.1
 @export var dash_cooldown:int = 5
+var is_dashing = false
+var dash_collisions = []
 
 # UI Component
 @export var health_bar: ProgressBar
@@ -52,37 +55,49 @@ func move(delta):
 		velocity = last_direction * (current_speed * delta * 100)
 	else:
 		last_direction = direction
-		current_speed += acceleration * base_movement_speed_multiplayer
-		current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
-		velocity = direction * (current_speed * delta * 100)
+		if is_dashing:
+			current_speed += acceleration * base_movement_speed_multiplayer * dash_speed
+			velocity = direction * (current_speed * delta * 100)
+			
+		else:
+			current_speed += acceleration * base_movement_speed_multiplayer
+			current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
+			velocity = direction * (current_speed * delta * 100)
 	move_and_slide()
+	if is_dashing:detect_dash_collision()
+	
+func detect_dash_collision():
+	var collisions = hit_box.get_overlapping_bodies()
+	for body in collisions:
+		if body.is_in_group(target_group) and !body in dash_collisions:
+			dash_collisions.append(body)
 	
 func do_dash():
 	if !dash_on_cooldown:
 		if direction != Vector2.ZERO:
-			dash_on_cooldown = true
+			collision_layer = 2
+			collision_mask = 2
+			is_dashing = true
 			var smoke = dash_smoke.instantiate()
-			var target_position = global_position + direction * dash_distance
-			smoke.global_position = global_position
-			smoke.rotation = (target_position - global_position).angle() + PI / 2
+			smoke.global_position = global_position - direction * 50
+			smoke.rotation = direction.angle() + PI / 2
 			var tween = get_tree().create_tween()
-			tween.tween_property(self, "global_position", target_position , 0.2)
-			tween.connect("finished",_on_dash_complete)
 			get_parent().add_child(smoke)
-			dash_timer.start(dash_cooldown)
-			
-func _on_dash_complete():
-	pass
-	
-func _draw():
-	var endpoint = global_position + direction * dash_distance
-	print("position",global_position)
-	draw_line(global_position, endpoint, Color.RED, 2)
-	draw_circle(endpoint,5,Color.RED)
-	draw_circle(position,5,Color.BLUE)
+			dash_timer.start(dash_duration)
 		
 func _on_dash_timer_timeout():
-	dash_on_cooldown = false
+	if is_dashing:
+		collision_layer = 1
+		collision_mask = 1
+		is_dashing = false
+		for body in dash_collisions:
+			body.apply_damage(5 * base_damage_multiplayer)
+		dash_collisions.clear()
+		dash_on_cooldown = true
+		dash_timer.start(dash_cooldown)
+	else:
+		dash_on_cooldown = false
+	
 func update_health_UI():
 	if health_bar != null:
 		health_bar.value
@@ -97,8 +112,8 @@ func apply_damage(amount):
 		health -= damage
 		update_health_UI()
 		var tween = get_tree().create_tween()
-		tween.tween_property(self,"modulate:",Color.RED,0.01)
-		tween.tween_property(self,"modulate:",Color(1,1,1,1),0.01)
+		tween.tween_property(self,"modulate:",Color.RED,0.05)
+		tween.tween_property(self,"modulate:",Color(1,1,1,1),0.05)
 	else:
 		die = true
 		remove_entity()
