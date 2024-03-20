@@ -1,4 +1,4 @@
-[gd_scene load_steps=62 format=3 uid="uid://f025q5gioy6r"]
+[gd_scene load_steps=64 format=3 uid="uid://f025q5gioy6r"]
 
 [ext_resource type="Script" path="res://Scripts/Enemy_Melee_1.gd" id="1_3yvjh"]
 [ext_resource type="Texture2D" uid="uid://ddcwcextxihq0" path="res://Assets/Player Sprite/death.png" id="2_00q7t"]
@@ -435,9 +435,20 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_btdlg"]
 size = Vector2(12, 16)
 
-[node name="Enemy_Melee_1" type="CharacterBody2D" groups=["enemy"]]
+[sub_resource type="CircleShape2D" id="CircleShape2D_l2dan"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_2yxuj"]
+
+[node name="Enemy_Melee_1" type="CharacterBody2D" node_paths=PackedStringArray("hit_box", "range") groups=["enemy"]]
 motion_mode = 1
 script = ExtResource("1_3yvjh")
+target_group = "player"
+health = 20
+hit_box = NodePath("Hit_Box")
+range = NodePath("Range")
+max_speed = 40.0
+acceleration = 2.0
+dash_speed = 100
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_7vixy")
@@ -447,3 +458,19 @@ script = ExtResource("5_27jv0")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_btdlg")
+
+[node name="Dash_Timer" type="Timer" parent="."]
+
+[node name="Attack_Timer" type="Timer" parent="."]
+
+[node name="Hit_Box" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Hit_Box"]
+shape = SubResource("CircleShape2D_l2dan")
+
+[node name="Range" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
+shape = SubResource("CircleShape2D_2yxuj")
+
+[connection signal="body_entered" from="Hit_Box" to="." method="_on_hit_box_body_entered"]

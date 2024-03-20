@@ -437,7 +437,7 @@ size = Vector2(12, 16)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rlheg"]
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("hit_box")]
+[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("hit_box") groups=["player"]]
 motion_mode = 1
 script = ExtResource("1_dvkjk")
 target_group = "enemy"

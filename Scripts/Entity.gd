@@ -11,7 +11,9 @@ var base_damage_multiplayer = 10.0
 var base_fire_rate_multiplayer = 1.0
 var base_movement_speed_multiplayer = 1.0
 var damage_reduction = 0.0
+var base_attack_rate_multiplayer = 1.0
 @export var hit_box:Area2D
+@export var range:Area2D
 
  #Directions
 var direction: Vector2
@@ -25,7 +27,7 @@ var current_speed = 0.0
 # Dash
 @export var dash_speed:int
 var dash_on_cooldown:bool
-var dash_timer: Timer
+@onready var dash_timer: Timer = Timer.new()
 @export var dash_duration:float = 0.1
 @export var dash_cooldown:int = 5
 var is_dashing = false
@@ -36,19 +38,29 @@ var dash_collisions = []
 @export var health_label:Label
 @export var entity_sprite:AnimatedSprite2D
 
+# Enemy Damaging/Targeting
+var enemies_inside_range = []
+var closets_enemy = null
+@onready var attack_timer: Timer = Timer.new()
+var can_attack = true
+
 #PreLoads
 var dash_smoke = preload("res://Scenes/Effects/Smoke.tscn")
 var dash_smoke2 = preload("res://Scenes/Effects/smoke_2.tscn")
 
 func _ready():
+	attack_timer.one_shot = true
+	dash_timer.one_shot = true
+	add_child(dash_timer)
+	add_child(attack_timer)
+	attack_timer.timeout.connect(_on_attack_timer_timeout)
 	max_health = health
 	direction = Vector2.ZERO
 	last_direction = direction
-	dash_timer = Timer.new()
-	add_child(dash_timer)
 	dash_timer.timeout.connect(_on_dash_timer_timeout)
 	
 func move(delta):
+	print(attack_timer.time_left)
 	if direction == Vector2.ZERO:
 		current_speed -= acceleration * base_movement_speed_multiplayer
 		current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
@@ -121,6 +133,38 @@ func apply_damage(amount):
 func remove_entity():
 	var tween = get_tree().create_tween()
 	tween.tween_callback(queue_free).set_delay(2)
+	
+func check_for_enemies():
+	var enemies = range.get_overlapping_bodies()
+	for enemy in enemies:
+		if enemy.is_in_group(target_group):
+			enemies_inside_range.append(enemy)
+	closets_enemy = get_closest_enemy()
+	enemies_inside_range = []
+	
+func get_closest_enemy():
+	if enemies_inside_range.is_empty():
+		return null
+	else:
+		for enemy in enemies_inside_range:
+			closets_enemy = enemies_inside_range[0]
+			var enemy_distance = global_position.distance_to(enemy.global_position)
+			var closest_enemy_distance = global_position.distance_to(closets_enemy.global_position)
+			if enemy_distance < closest_enemy_distance:
+				closets_enemy = enemy
+		return closets_enemy
+
+	
+func do_melee_attack():
+	closets_enemy.apply_damage(1 * base_damage_multiplayer)
+	can_attack = false
+	attack_timer.start(1)
+	
+func _on_attack_timer_timeout():
+	print("attack resset")
+	can_attack = true
+	
+	
 		
 	
 	
