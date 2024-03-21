@@ -1,7 +1,7 @@
 extends CharacterBody2D
 class_name Entity
 
-
+@export var devMode = false
 #Attributes
 @export var target_group: String
 @export var health: int = 100
@@ -27,7 +27,7 @@ var current_speed = 0.0
 # Dash
 @export var dash_speed:int
 var dash_on_cooldown:bool
-@onready var dash_timer: Timer = Timer.new()
+var dash_timer: Timer
 @export var dash_duration:float = 0.1
 @export var dash_cooldown:int = 5
 var is_dashing = false
@@ -41,26 +41,31 @@ var dash_collisions = []
 # Enemy Damaging/Targeting
 var enemies_inside_range = []
 var closets_enemy = null
-@onready var attack_timer: Timer = Timer.new()
+var attack_timer: Timer
 var can_attack = true
 
 #PreLoads
 var dash_smoke = preload("res://Scenes/Effects/Smoke.tscn")
 var dash_smoke2 = preload("res://Scenes/Effects/smoke_2.tscn")
 
-func _ready():
-	attack_timer.one_shot = true
-	dash_timer.one_shot = true
-	add_child(dash_timer)
-	add_child(attack_timer)
-	attack_timer.timeout.connect(_on_attack_timer_timeout)
+func _init():
 	max_health = health
 	direction = Vector2.ZERO
 	last_direction = direction
+	connect_signals()
+	
+func connect_signals():
+	dash_timer = Timer.new()
+	attack_timer = Timer.new()
+	attack_timer.one_shot = true
+	dash_timer.one_shot = true
+	attack_timer.timeout.connect(_on_attack_timer_timeout)
 	dash_timer.timeout.connect(_on_dash_timer_timeout)
+	add_child(dash_timer)
+	add_child(attack_timer)
+	
 	
 func move(delta):
-	print(attack_timer.time_left)
 	if direction == Vector2.ZERO:
 		current_speed -= acceleration * base_movement_speed_multiplayer
 		current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
@@ -85,7 +90,7 @@ func detect_dash_collision():
 			dash_collisions.append(body)
 	
 func do_dash():
-	if !dash_on_cooldown:
+	if !dash_on_cooldown and !is_dashing:
 		if direction != Vector2.ZERO:
 			collision_layer = 2
 			collision_mask = 2
@@ -93,7 +98,6 @@ func do_dash():
 			var smoke = dash_smoke.instantiate()
 			smoke.global_position = global_position - direction * 50
 			smoke.rotation = direction.angle() + PI / 2
-			var tween = get_tree().create_tween()
 			get_parent().add_child(smoke)
 			dash_timer.start(dash_duration)
 		
@@ -120,6 +124,7 @@ func update_health_UI():
 func apply_damage(amount):
 	if damage_reduction > 0.8: damage_reduction = 0.8
 	var damage = amount * (1 - damage_reduction)
+	if devMode:damage = 0
 	if health > damage:
 		health -= damage
 		update_health_UI()
@@ -158,10 +163,9 @@ func get_closest_enemy():
 func do_melee_attack():
 	closets_enemy.apply_damage(1 * base_damage_multiplayer)
 	can_attack = false
-	attack_timer.start(1)
+	attack_timer.start(1 / base_attack_rate_multiplayer)
 	
 func _on_attack_timer_timeout():
-	print("attack resset")
 	can_attack = true
 	
 	

@@ -1,8 +1,8 @@
 [gd_scene load_steps=5 format=3 uid="uid://oioiq0y8nmuk"]
 
 [ext_resource type="PackedScene" uid="uid://b5xql1kfiyvxu" path="res://Scenes/player.tscn" id="1_mvte5"]
-[ext_resource type="PackedScene" uid="uid://f025q5gioy6r" path="res://Scenes/Enemy Types/enemy_melee_1.tscn" id="2_4lerd"]
-[ext_resource type="Script" path="res://Scenes/Label.gd" id="3_ngoh6"]
+[ext_resource type="Script" path="res://Scripts/Label.gd" id="3_ngoh6"]
+[ext_resource type="Script" path="res://Scripts/Spawn_Director.gd" id="3_x0k2f"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_hrrbs"]
 
@@ -12,9 +12,6 @@
 
 [node name="Camara" type="Camera2D" parent="Player"]
 position_smoothing_enabled = true
-
-[node name="Enemy_Melee_1" parent="." instance=ExtResource("2_4lerd")]
-position = Vector2(83, -24)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
@@ -32,3 +29,10 @@ grow_vertical = 0
 text = "cor"
 label_settings = SubResource("LabelSettings_hrrbs")
 script = ExtResource("3_ngoh6")
+
+[node name="Spawn_Director" type="Node" parent="." node_paths=PackedStringArray("spawn_point")]
+script = ExtResource("3_x0k2f")
+spawn_point = NodePath("Marker2D")
+
+[node name="Marker2D" type="Marker2D" parent="Spawn_Director"]
+position = Vector2(-540, -215)

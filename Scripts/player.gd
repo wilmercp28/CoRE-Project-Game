@@ -2,6 +2,7 @@ extends Entity
 
 	
 func _physics_process(delta):
+	base_damage_multiplayer = 100
 	if !die:
 		direction = Input.get_vector("ui_left","ui_right","ui_up","ui_down").normalized()
 		move(delta)
