@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://oioiq0y8nmuk"]
+[gd_scene load_steps=4 format=3 uid="uid://oioiq0y8nmuk"]
 
 [ext_resource type="PackedScene" uid="uid://b5xql1kfiyvxu" path="res://Scenes/player.tscn" id="1_mvte5"]
-[ext_resource type="Script" path="res://Scripts/Label.gd" id="3_ngoh6"]
+[ext_resource type="PackedScene" uid="uid://b05mjth2ppfsy" path="res://Scenes/UI.tscn" id="2_7y6ke"]
 [ext_resource type="Script" path="res://Scripts/Spawn_Director.gd" id="3_x0k2f"]
-
-[sub_resource type="LabelSettings" id="LabelSettings_hrrbs"]
 
 [node name="Game" type="Node2D"]
 
@@ -15,24 +13,11 @@ position_smoothing_enabled = true
 
 [node name="UI" type="CanvasLayer" parent="."]
 
-[node name="Label" type="Label" parent="UI"]
-anchors_preset = 7
-anchor_left = 0.5
-anchor_top = 1.0
-anchor_right = 0.5
-anchor_bottom = 1.0
-offset_left = -150.0
-offset_top = -74.0
-offset_right = 67.0
-grow_horizontal = 2
-grow_vertical = 0
-text = "cor"
-label_settings = SubResource("LabelSettings_hrrbs")
-script = ExtResource("3_ngoh6")
+[node name="Control" parent="UI" instance=ExtResource("2_7y6ke")]
 
 [node name="Spawn_Director" type="Node" parent="." node_paths=PackedStringArray("spawn_point")]
 script = ExtResource("3_x0k2f")
 spawn_point = NodePath("Marker2D")
 
 [node name="Marker2D" type="Marker2D" parent="Spawn_Director"]
-position = Vector2(-540, -215)
+position = Vector2(-274, -92)

@@ -432,20 +432,19 @@ animations = [{
 "speed": 15.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_m8xof"]
-size = Vector2(12, 16)
+[sub_resource type="CircleShape2D" id="CircleShape2D_q277p"]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_rlheg"]
 
-[node name="Player" type="CharacterBody2D" node_paths=PackedStringArray("hit_box") groups=["player"]]
-motion_mode = 1
+[node name="Player" type="RigidBody2D" node_paths=PackedStringArray("hit_box") groups=["player"]]
+mass = 100.0
+lock_rotation = true
 script = ExtResource("1_dvkjk")
 target_group = "enemy"
 health = 200
 hit_box = NodePath("Hit_Box")
-max_speed = 50.0
-acceleration = 2.0
-dash_speed = 200
+speed = 120.0
+dash_speed = 1000
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1pbhn")
@@ -454,7 +453,7 @@ autoplay = "idle_right"
 script = ExtResource("4_vuwhx")
 
 [node name="Collision" type="CollisionShape2D" parent="."]
-shape = SubResource("RectangleShape2D_m8xof")
+shape = SubResource("CircleShape2D_q277p")
 
 [node name="Hit_Box" type="Area2D" parent="."]
 

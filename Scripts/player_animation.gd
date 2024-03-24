@@ -9,7 +9,7 @@ func _ready():
 
 func _physics_process(delta):
 	if !entity.die:
-		if entity.velocity == Vector2.ZERO:
+		if entity.direction == Vector2.ZERO:
 			match animation_name:
 				"run_up":
 					animation_name = "idle_up"
@@ -24,7 +24,7 @@ func _physics_process(delta):
 				animation_name = "run_down"
 			elif entity.direction.y < 0:
 				animation_name = "run_up"
-			elif entity.direction.x > 0:
+			if entity.direction.x > 0:
 				animation_name = "run_right"
 			elif entity.direction.x < 0:
 				animation_name = "run_left"

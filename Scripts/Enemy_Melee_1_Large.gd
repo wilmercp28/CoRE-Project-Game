@@ -14,6 +14,3 @@ func _physics_process(delta):
 	if !die:move(delta)
 	if closets_enemy != null:
 		if can_attack:do_melee_attack()
-
-
-

@@ -1,10 +1,10 @@
-extends CharacterBody2D
+extends RigidBody2D
 class_name Entity
 
 @export var devMode = false
 #Attributes
 @export var target_group: String
-@export var health: int = 100
+@export var health: int
 var max_health: int
 var die = false
 var base_damage_multiplayer = 10.0
@@ -20,15 +20,13 @@ var direction: Vector2
 var last_direction:Vector2
 
 #Movement
-@export var max_speed: float
-@export var acceleration:float
-var current_speed = 0.0
+@export var speed: float
 
 # Dash
 @export var dash_speed:int
 var dash_on_cooldown:bool
 var dash_timer: Timer
-@export var dash_duration:float = 0.1
+@export var dash_duration:float = 0.2
 @export var dash_cooldown:int = 5
 var is_dashing = false
 var dash_collisions = []
@@ -49,10 +47,12 @@ var dash_smoke = preload("res://Scenes/Effects/Smoke.tscn")
 var dash_smoke2 = preload("res://Scenes/Effects/smoke_2.tscn")
 
 func _init():
-	max_health = health
+	linear_damp = 5
 	direction = Vector2.ZERO
 	last_direction = direction
 	connect_signals()
+func _ready():
+	max_health = health
 	
 func connect_signals():
 	dash_timer = Timer.new()
@@ -66,23 +66,12 @@ func connect_signals():
 	
 	
 func move(delta):
-	if direction == Vector2.ZERO:
-		current_speed -= acceleration * base_movement_speed_multiplayer
-		current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
-		velocity = last_direction * (current_speed * delta * 100)
+	if direction != Vector2.ZERO:
+		apply_force((direction * speed * mass * 2) * base_movement_speed_multiplayer)
 	else:
 		last_direction = direction
-		if is_dashing:
-			current_speed += acceleration * base_movement_speed_multiplayer * dash_speed
-			velocity = direction * (current_speed * delta * 100)
-			
-		else:
-			current_speed += acceleration * base_movement_speed_multiplayer
-			current_speed = clamp(current_speed,0,max_speed * base_movement_speed_multiplayer)
-			velocity = direction * (current_speed * delta * 100)
-	move_and_slide()
 	if is_dashing:detect_dash_collision()
-	
+			
 func detect_dash_collision():
 	var collisions = hit_box.get_overlapping_bodies()
 	for body in collisions:
@@ -92,14 +81,16 @@ func detect_dash_collision():
 func do_dash():
 	if !dash_on_cooldown and !is_dashing:
 		if direction != Vector2.ZERO:
+			is_dashing = true
 			collision_layer = 2
 			collision_mask = 2
-			is_dashing = true
 			var smoke = dash_smoke.instantiate()
 			smoke.global_position = global_position - direction * 50
 			smoke.rotation = direction.angle() + PI / 2
 			get_parent().add_child(smoke)
 			dash_timer.start(dash_duration)
+			apply_impulse((direction * mass * dash_speed) * base_movement_speed_multiplayer)
+			
 		
 func _on_dash_timer_timeout():
 	if is_dashing:
@@ -132,8 +123,15 @@ func apply_damage(amount):
 		tween.tween_property(self,"modulate:",Color.RED,0.05)
 		tween.tween_property(self,"modulate:",Color(1,1,1,1),0.05)
 	else:
+		health -= damage
 		die = true
 		remove_entity()
+		
+func regenerate_health(amount):
+	if max_health < health + amount:
+		health = max_health
+	else:
+		health += amount
 		
 func remove_entity():
 	var tween = get_tree().create_tween()

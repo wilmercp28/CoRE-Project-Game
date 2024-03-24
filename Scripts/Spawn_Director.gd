@@ -10,7 +10,7 @@ func _ready():
 	get_enemies_dir("res://Scenes/Enemy Types/")
 
 func _process(delta):
-	if current_enemies < 300:
+	if current_enemies < 20:
 		var enemy_instance = tier_1_enemies.pick_random().instantiate()
 		enemy_instance.global_position = spawn_point.global_position
 		get_parent().add_child(enemy_instance)
