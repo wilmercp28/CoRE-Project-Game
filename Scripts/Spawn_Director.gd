@@ -11,10 +11,11 @@ func _ready():
 
 func _process(delta):
 	if current_enemies < 20:
-		var enemy_instance = tier_1_enemies.pick_random().instantiate()
-		enemy_instance.global_position = spawn_point.global_position
-		get_parent().add_child(enemy_instance)
-		current_enemies += 1
+		if !tier_1_enemies.is_empty():
+			var enemy_instance = tier_1_enemies.pick_random().instantiate()
+			enemy_instance.global_position = spawn_point.global_position
+			get_parent().add_child(enemy_instance)
+			current_enemies += 1
 
 func get_enemies_dir(path):
 	var dir = DirAccess.open(path)

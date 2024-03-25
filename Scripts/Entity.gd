@@ -1,7 +1,7 @@
 extends RigidBody2D
 class_name Entity
 
-@export var devMode = false
+@export var devMode = true
 #Attributes
 @export var target_group: String
 @export var health: int
@@ -20,7 +20,12 @@ var direction: Vector2
 var last_direction:Vector2
 
 #Movement
+@export var re_pathing_time = 1
 @export var speed: float
+@export var path_finding: bool = true
+@export var recalculation_delay = 1
+var nav_agent: NavigationAgent2D
+var pathing_calculation_timer:Timer
 
 # Dash
 @export var dash_speed:int
@@ -61,16 +66,41 @@ func connect_signals():
 	dash_timer.one_shot = true
 	attack_timer.timeout.connect(_on_attack_timer_timeout)
 	dash_timer.timeout.connect(_on_dash_timer_timeout)
+	if path_finding:
+		pathing_calculation_timer = Timer.new()
+		pathing_calculation_timer.autostart = true
+		pathing_calculation_timer.timeout.connect(_recalculate_path)
+		pathing_calculation_timer.start(recalculation_delay)
+		nav_agent = NavigationAgent2D.new()
+		nav_agent.debug_enabled = devMode
+		nav_agent.neighbor_distance = 0
+		nav_agent.avoidance_enabled = true
+		nav_agent.velocity_computed.connect(_on_path_computed)
+		add_child(pathing_calculation_timer)
+		add_child(nav_agent)
+		
 	add_child(dash_timer)
 	add_child(attack_timer)
 	
 	
-func move(delta):
+func move():
 	if direction != Vector2.ZERO:
-		apply_force((direction * speed * mass * 2) * base_movement_speed_multiplayer)
+		apply_central_force((direction.normalized() * speed * mass) * base_movement_speed_multiplayer)
 	else:
 		last_direction = direction
 	if is_dashing:detect_dash_collision()
+	
+func _on_path_computed(safe_velocity:Vector2):
+	direction = safe_velocity
+	
+func _recalculate_path():
+	nav_agent.target_position = get_node("/root/Game/Player").global_position
+	direction = nav_agent.get_next_path_position() - global_position
+	nav_agent.velocity = direction
+	if nav_agent.avoidance_enabled:
+		nav_agent.velocity = direction
+	else:
+		_on_path_computed(direction)
 			
 func detect_dash_collision():
 	var collisions = hit_box.get_overlapping_bodies()
@@ -89,7 +119,7 @@ func do_dash():
 			smoke.rotation = direction.angle() + PI / 2
 			get_parent().add_child(smoke)
 			dash_timer.start(dash_duration)
-			apply_impulse((direction * mass * dash_speed) * base_movement_speed_multiplayer)
+			apply_impulse((direction.normalized() * mass * dash_speed) * base_movement_speed_multiplayer)
 			
 		
 func _on_dash_timer_timeout():

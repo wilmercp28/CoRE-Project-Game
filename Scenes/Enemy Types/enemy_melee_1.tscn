@@ -445,9 +445,10 @@ modulate = Color(1, 1, 0, 1)
 lock_rotation = true
 script = ExtResource("1_3yvjh")
 target_group = "player"
+health = 100
 hit_box = NodePath("Hit_Box")
 range = NodePath("Range")
-speed = 100.0
+speed = 120.0
 dash_speed = 100
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
@@ -469,3 +470,6 @@ shape = SubResource("CircleShape2D_l2dan")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
 shape = SubResource("CircleShape2D_2yxuj")
+
+[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
+radius = 10.0
