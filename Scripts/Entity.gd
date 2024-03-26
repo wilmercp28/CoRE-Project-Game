@@ -23,7 +23,7 @@ var last_direction:Vector2
 @export var re_pathing_time = 1
 @export var speed: float
 @export var path_finding: bool = true
-@export var recalculation_delay = 1
+@export var recalculation_delay = 0.1
 var nav_agent: NavigationAgent2D
 var pathing_calculation_timer:Timer
 
@@ -73,19 +73,17 @@ func connect_signals():
 		pathing_calculation_timer.start(recalculation_delay)
 		nav_agent = NavigationAgent2D.new()
 		nav_agent.debug_enabled = devMode
-		nav_agent.neighbor_distance = 0
+		nav_agent.max_speed = (mass * speed) * base_movement_speed_multiplayer
+		nav_agent.target_desired_distance = 5
 		nav_agent.avoidance_enabled = true
 		nav_agent.velocity_computed.connect(_on_path_computed)
 		add_child(pathing_calculation_timer)
 		add_child(nav_agent)
-		
 	add_child(dash_timer)
 	add_child(attack_timer)
-	
-	
 func move():
 	if direction != Vector2.ZERO:
-		apply_central_force((direction.normalized() * speed * mass) * base_movement_speed_multiplayer)
+		linear_velocity = direction
 	else:
 		last_direction = direction
 	if is_dashing:detect_dash_collision()
@@ -94,13 +92,18 @@ func _on_path_computed(safe_velocity:Vector2):
 	direction = safe_velocity
 	
 func _recalculate_path():
+	nav_agent.max_speed = speed * base_movement_speed_multiplayer
 	nav_agent.target_position = get_node("/root/Game/Player").global_position
-	direction = nav_agent.get_next_path_position() - global_position
-	nav_agent.velocity = direction
-	if nav_agent.avoidance_enabled:
-		nav_agent.velocity = direction
+	if global_position.distance_to(get_node("/root/Game/Player").global_position) < 200:
+		nav_agent.avoidance_enabled = false
 	else:
-		_on_path_computed(direction)
+		nav_agent.avoidance_enabled = true
+	direction = (nav_agent.get_next_path_position() - global_position).normalized()
+	nav_agent.velocity = (direction * speed) * base_movement_speed_multiplayer
+	if nav_agent.avoidance_enabled:
+		nav_agent.velocity = (direction * speed) * base_movement_speed_multiplayer
+	else:
+		_on_path_computed((direction * speed) * base_movement_speed_multiplayer)
 			
 func detect_dash_collision():
 	var collisions = hit_box.get_overlapping_bodies()
@@ -174,7 +177,10 @@ func check_for_enemies():
 			enemies_inside_range.append(enemy)
 	closets_enemy = get_closest_enemy()
 	enemies_inside_range = []
-	
+func check_for_player():
+	var player_is_at_range = range.get_overlapping_bodies().has(get_node("/root/Game/Player"))
+	if player_is_at_range and can_attack:
+		do_melee_attack()
 func get_closest_enemy():
 	if enemies_inside_range.is_empty():
 		return null

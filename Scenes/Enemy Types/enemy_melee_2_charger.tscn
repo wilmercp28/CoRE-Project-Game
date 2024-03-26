@@ -469,6 +469,3 @@ shape = SubResource("CircleShape2D_l2dan")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
 shape = SubResource("CircleShape2D_2yxuj")
-
-[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
-radius = 10.0

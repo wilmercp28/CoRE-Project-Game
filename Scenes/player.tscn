@@ -443,7 +443,7 @@ script = ExtResource("1_dvkjk")
 target_group = "enemy"
 health = 200
 hit_box = NodePath("Hit_Box")
-speed = 120.0
+speed = 100.0
 path_finding = false
 dash_speed = 1000
 

@@ -432,8 +432,8 @@ animations = [{
 "speed": 15.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_x0k20"]
-size = Vector2(59, 79)
+[sub_resource type="CircleShape2D" id="CircleShape2D_su02y"]
+radius = 43.5718
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l2dan"]
 radius = 42.2966
@@ -457,8 +457,7 @@ autoplay = "idle_right"
 script = ExtResource("5_a7rhs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0.5, -3.5)
-shape = SubResource("RectangleShape2D_x0k20")
+shape = SubResource("CircleShape2D_su02y")
 
 [node name="Hit_Box" type="Area2D" parent="."]
 
@@ -469,6 +468,3 @@ shape = SubResource("CircleShape2D_l2dan")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
 shape = SubResource("CircleShape2D_2yxuj")
-
-[node name="NavigationObstacle2D" type="NavigationObstacle2D" parent="."]
-radius = 10.0
