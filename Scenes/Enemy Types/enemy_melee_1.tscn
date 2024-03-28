@@ -448,8 +448,7 @@ target_group = "player"
 health = 100
 hit_box = NodePath("Hit_Box")
 range = NodePath("Range")
-speed = 120.0
-dash_speed = 100
+speed = 80.0
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_7vixy")

@@ -432,13 +432,14 @@ animations = [{
 "speed": 15.0
 }]
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_su02y"]
-radius = 43.5718
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_scbww"]
+size = Vector2(36, 46)
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_l2dan"]
-radius = 42.2966
+radius = 25.02
 
-[sub_resource type="CircleShape2D" id="CircleShape2D_2yxuj"]
+[sub_resource type="CircleShape2D" id="CircleShape2D_1h65j"]
+radius = 33.0606
 
 [node name="Enemy_Melee_1_Large" type="RigidBody2D" node_paths=PackedStringArray("hit_box", "range") groups=["enemy"]]
 modulate = Color(1, 1, 0, 1)
@@ -450,14 +451,14 @@ range = NodePath("Range")
 speed = 110.0
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
-scale = Vector2(5, 5)
+scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_7vixy")
 animation = &"die"
 autoplay = "idle_right"
 script = ExtResource("5_a7rhs")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-shape = SubResource("CircleShape2D_su02y")
+shape = SubResource("RectangleShape2D_scbww")
 
 [node name="Hit_Box" type="Area2D" parent="."]
 
@@ -467,4 +468,4 @@ shape = SubResource("CircleShape2D_l2dan")
 [node name="Range" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Range"]
-shape = SubResource("CircleShape2D_2yxuj")
+shape = SubResource("CircleShape2D_1h65j")

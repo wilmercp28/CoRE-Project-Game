@@ -1,7 +1,7 @@
 extends RigidBody2D
 class_name Entity
 
-@export var devMode = true
+@export var devMode = false
 #Attributes
 @export var target_group: String
 @export var health: int
@@ -20,18 +20,18 @@ var direction: Vector2
 var last_direction:Vector2
 
 #Movement
-@export var re_pathing_time = 1
+
 @export var speed: float
 @export var path_finding: bool = true
-@export var recalculation_delay = 0.1
+@export var recalculation_delay: float = 0.5
 var nav_agent: NavigationAgent2D
 var pathing_calculation_timer:Timer
 
 # Dash
-@export var dash_speed:int
+@export var dash_speed_multiplayer:int
 var dash_on_cooldown:bool
 var dash_timer: Timer
-@export var dash_duration:float = 0.2
+@export var dash_duration:float = 0.1
 @export var dash_cooldown:int = 5
 var is_dashing = false
 var dash_collisions = []
@@ -69,21 +69,24 @@ func connect_signals():
 	if path_finding:
 		pathing_calculation_timer = Timer.new()
 		pathing_calculation_timer.autostart = true
+		pathing_calculation_timer.wait_time = recalculation_delay
 		pathing_calculation_timer.timeout.connect(_recalculate_path)
-		pathing_calculation_timer.start(recalculation_delay)
 		nav_agent = NavigationAgent2D.new()
 		nav_agent.debug_enabled = devMode
 		nav_agent.max_speed = (mass * speed) * base_movement_speed_multiplayer
-		nav_agent.target_desired_distance = 5
+		nav_agent.target_desired_distance = 20
+		nav_agent.path_postprocessing = 1
+		nav_agent.path_desired_distance = 60
 		nav_agent.avoidance_enabled = true
 		nav_agent.velocity_computed.connect(_on_path_computed)
 		add_child(pathing_calculation_timer)
 		add_child(nav_agent)
 	add_child(dash_timer)
 	add_child(attack_timer)
+	
 func move():
 	if direction != Vector2.ZERO:
-		linear_velocity = direction
+		apply_central_force(direction * mass)
 	else:
 		last_direction = direction
 	if is_dashing:detect_dash_collision()
@@ -93,8 +96,9 @@ func _on_path_computed(safe_velocity:Vector2):
 	
 func _recalculate_path():
 	nav_agent.max_speed = speed * base_movement_speed_multiplayer
-	nav_agent.target_position = get_node("/root/Game/Player").global_position
-	if global_position.distance_to(get_node("/root/Game/Player").global_position) < 200:
+	var player = get_node("/root/Game/Player")
+	nav_agent.target_position = player.global_position + (player.direction / 2)
+	if global_position.distance_to(get_node("/root/Game/Player").global_position) < 30:
 		nav_agent.avoidance_enabled = false
 	else:
 		nav_agent.avoidance_enabled = true
@@ -120,11 +124,10 @@ func do_dash():
 			var smoke = dash_smoke.instantiate()
 			smoke.global_position = global_position - direction * 50
 			smoke.rotation = direction.angle() + PI / 2
-			get_parent().add_child(smoke)
+			add_child(smoke)
 			dash_timer.start(dash_duration)
-			apply_impulse((direction.normalized() * mass * dash_speed) * base_movement_speed_multiplayer)
+			apply_central_impulse((direction * mass * dash_speed_multiplayer) * base_movement_speed_multiplayer)
 			
-		
 func _on_dash_timer_timeout():
 	if is_dashing:
 		collision_layer = 1
@@ -177,10 +180,7 @@ func check_for_enemies():
 			enemies_inside_range.append(enemy)
 	closets_enemy = get_closest_enemy()
 	enemies_inside_range = []
-func check_for_player():
-	var player_is_at_range = range.get_overlapping_bodies().has(get_node("/root/Game/Player"))
-	if player_is_at_range and can_attack:
-		do_melee_attack()
+
 func get_closest_enemy():
 	if enemies_inside_range.is_empty():
 		return null
@@ -193,7 +193,6 @@ func get_closest_enemy():
 				closets_enemy = enemy
 		return closets_enemy
 
-	
 func do_melee_attack():
 	closets_enemy.apply_damage(1 * base_damage_multiplayer)
 	can_attack = false

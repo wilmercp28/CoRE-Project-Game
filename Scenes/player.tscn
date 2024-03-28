@@ -445,7 +445,7 @@ health = 200
 hit_box = NodePath("Hit_Box")
 speed = 100.0
 path_finding = false
-dash_speed = 1000
+dash_speed_multiplayer = 10
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_1pbhn")
