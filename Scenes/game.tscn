@@ -133,15 +133,26 @@ radius = 1000.0
 [node name="Player" parent="." instance=ExtResource("1_mvte5")]
 
 [node name="Camara" type="Camera2D" parent="Player"]
+zoom = Vector2(2, 2)
 position_smoothing_enabled = true
+
+[node name="Marker2D1" type="Marker2D" parent="Player"]
+position = Vector2(300, 0)
+
+[node name="Marker2D2" type="Marker2D" parent="Player"]
+position = Vector2(-300, 0)
+
+[node name="Marker2D3" type="Marker2D" parent="Player"]
+position = Vector2(0, 200)
+
+[node name="Marker2D4" type="Marker2D" parent="Player"]
+position = Vector2(0, -200)
 
 [node name="UI" type="CanvasLayer" parent="."]
 
 [node name="Control" parent="UI" instance=ExtResource("2_7y6ke")]
 
-[node name="Spawn_Director" type="Node" parent="." node_paths=PackedStringArray("spawn_point")]
+[node name="Spawn_Director" type="Node" parent="."]
 script = ExtResource("3_x0k2f")
-spawn_point = NodePath("Marker2D")
 
-[node name="Marker2D" type="Marker2D" parent="Spawn_Director"]
-position = Vector2(-274, -92)
+[node name="Timer" type="Timer" parent="Spawn_Director"]

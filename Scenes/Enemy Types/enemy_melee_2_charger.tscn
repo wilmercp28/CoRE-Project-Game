@@ -448,6 +448,7 @@ health = 50
 hit_box = NodePath("Hit_Box")
 range = NodePath("Range")
 speed = 80.0
+dash_speed_multiplayer = 7
 
 [node name="sprite" type="AnimatedSprite2D" parent="."]
 sprite_frames = SubResource("SpriteFrames_7vixy")

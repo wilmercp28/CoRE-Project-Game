@@ -10,17 +10,17 @@ func _ready():
 
 
 func _physics_process(delta):
+	get_dirction_to_player()
 	if global_position.distance_to(player.global_position) < 100 and !preparing_dash and !dash_on_cooldown:
 		preparing_dash = true
 		var tween = get_tree().create_tween()
 		tween.tween_callback(perform_dash).set_delay(1)
-		direction = (player.global_position - global_position).normalized() * speed * dash_speed_multiplayer
-		apply_central_impulse(direction)
-	move()
+	if !preparing_dash: move()
 	check_for_enemies()
 	if closets_enemy != null:
 		if can_attack:do_melee_attack()
 
 func perform_dash():
 	preparing_dash = false
+	move()
 	do_dash()

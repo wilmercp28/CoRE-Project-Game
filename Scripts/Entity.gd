@@ -1,7 +1,7 @@
 extends RigidBody2D
 class_name Entity
 
-@export var devMode = false
+@export var devMode = true
 #Attributes
 @export var target_group: String
 @export var health: int
@@ -67,47 +67,30 @@ func connect_signals():
 	attack_timer.timeout.connect(_on_attack_timer_timeout)
 	dash_timer.timeout.connect(_on_dash_timer_timeout)
 	if path_finding:
-		pathing_calculation_timer = Timer.new()
-		pathing_calculation_timer.autostart = true
-		pathing_calculation_timer.wait_time = recalculation_delay
-		pathing_calculation_timer.timeout.connect(_recalculate_path)
 		nav_agent = NavigationAgent2D.new()
 		nav_agent.debug_enabled = devMode
 		nav_agent.max_speed = (mass * speed) * base_movement_speed_multiplayer
 		nav_agent.target_desired_distance = 20
 		nav_agent.path_postprocessing = 1
-		nav_agent.path_desired_distance = 60
 		nav_agent.avoidance_enabled = true
-		nav_agent.velocity_computed.connect(_on_path_computed)
-		add_child(pathing_calculation_timer)
+		nav_agent.path_desired_distance = 60
 		add_child(nav_agent)
 	add_child(dash_timer)
 	add_child(attack_timer)
 	
 func move():
 	if direction != Vector2.ZERO:
-		apply_central_force(direction * mass)
+		apply_central_force(direction.normalized() * speed * mass)
 	else:
 		last_direction = direction
 	if is_dashing:detect_dash_collision()
 	
-func _on_path_computed(safe_velocity:Vector2):
-	direction = safe_velocity
-	
-func _recalculate_path():
-	nav_agent.max_speed = speed * base_movement_speed_multiplayer
+func get_dirction_to_player():
 	var player = get_node("/root/Game/Player")
-	nav_agent.target_position = player.global_position + (player.direction / 2)
-	if global_position.distance_to(get_node("/root/Game/Player").global_position) < 30:
-		nav_agent.avoidance_enabled = false
-	else:
-		nav_agent.avoidance_enabled = true
-	direction = (nav_agent.get_next_path_position() - global_position).normalized()
+	nav_agent.target_position = player.global_position
+	nav_agent.max_speed = speed * base_movement_speed_multiplayer
 	nav_agent.velocity = (direction * speed) * base_movement_speed_multiplayer
-	if nav_agent.avoidance_enabled:
-		nav_agent.velocity = (direction * speed) * base_movement_speed_multiplayer
-	else:
-		_on_path_computed((direction * speed) * base_movement_speed_multiplayer)
+	direction = nav_agent.get_next_path_position() - global_position
 			
 func detect_dash_collision():
 	var collisions = hit_box.get_overlapping_bodies()
@@ -122,7 +105,7 @@ func do_dash():
 			collision_layer = 2
 			collision_mask = 2
 			var smoke = dash_smoke.instantiate()
-			smoke.global_position = global_position - direction * 50
+			smoke.global_position = direction.normalized() * -80
 			smoke.rotation = direction.angle() + PI / 2
 			add_child(smoke)
 			dash_timer.start(dash_duration)
