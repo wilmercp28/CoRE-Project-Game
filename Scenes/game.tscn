@@ -5,7 +5,7 @@
 [ext_resource type="Texture2D" uid="uid://cgdgk5le8qbqa" path="res://icon.svg" id="3_kto0a"]
 [ext_resource type="Script" path="res://Scripts/Spawn_Director.gd" id="3_x0k2f"]
 [ext_resource type="Texture2D" uid="uid://bd6p1krkhmoyy" path="res://Assets/Tile Map/Grass.png" id="4_u8qx4"]
-[ext_resource type="Script" path="res://Scenes/TileMap.gd" id="5_abugs"]
+[ext_resource type="Script" path="res://Scripts/TileMap.gd" id="5_abugs"]
 
 [sub_resource type="NavigationPolygon" id="NavigationPolygon_akkuh"]
 vertices = PackedVector2Array(8, 8, -8, 8, -8, -8, 8, -8)

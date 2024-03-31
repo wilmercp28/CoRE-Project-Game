@@ -30,7 +30,6 @@ func get_spawnPoints():
 		get_spawnPoints()
 
 func _process(delta):
-	print(can_spawn)
 	if !tier_1_enemies.is_empty() and can_spawn:
 			var enemy_instance = tier_1_enemies.pick_random().instantiate()
 			enemy_instance.global_position = spawn_points.pick_random().global_position

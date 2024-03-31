@@ -7,7 +7,7 @@ class_name Entity
 @export var health: int
 var max_health: int
 var die = false
-var base_damage_multiplayer = 10.0
+var base_damage_multiplayer = 1.0
 var base_fire_rate_multiplayer = 1.0
 var base_movement_speed_multiplayer = 1.0
 var damage_reduction = 0.0
@@ -102,8 +102,6 @@ func do_dash():
 	if !dash_on_cooldown and !is_dashing:
 		if direction != Vector2.ZERO:
 			is_dashing = true
-			collision_layer = 2
-			collision_mask = 2
 			var smoke = dash_smoke.instantiate()
 			smoke.global_position = direction.normalized() * -80
 			smoke.rotation = direction.angle() + PI / 2
@@ -180,6 +178,8 @@ func do_melee_attack():
 	closets_enemy.apply_damage(1 * base_damage_multiplayer)
 	can_attack = false
 	attack_timer.start(1 / base_attack_rate_multiplayer)
+	var direction_knock_back = (global_position - closets_enemy.global_position).normalized() * 200 * mass
+	apply_central_impulse(direction_knock_back)
 	
 func _on_attack_timer_timeout():
 	can_attack = true

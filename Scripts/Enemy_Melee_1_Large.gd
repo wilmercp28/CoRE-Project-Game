@@ -8,7 +8,7 @@ func _ready():
 
 
 func _physics_process(delta):
-	nav_agent.radius = 50
+	get_dirction_to_player()
 	move()
 	check_for_enemies()
 	if closets_enemy != null:

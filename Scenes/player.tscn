@@ -1,10 +1,11 @@
-[gd_scene load_steps=63 format=3 uid="uid://b5xql1kfiyvxu"]
+[gd_scene load_steps=64 format=3 uid="uid://b5xql1kfiyvxu"]
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_dvkjk"]
 [ext_resource type="Texture2D" uid="uid://bltedky8e6fl6" path="res://Assets/Player Sprite/idle.png" id="1_p3deo"]
 [ext_resource type="Texture2D" uid="uid://w8tf4shl6aew" path="res://Assets/Player Sprite/run.png" id="2_plka3"]
 [ext_resource type="Texture2D" uid="uid://ddcwcextxihq0" path="res://Assets/Player Sprite/death.png" id="2_v54k3"]
 [ext_resource type="Script" path="res://Scripts/player_animation.gd" id="4_vuwhx"]
+[ext_resource type="PackedScene" uid="uid://07n2d0u521aj" path="res://Scenes/drone.tscn" id="6_brd4h"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_khspg"]
 atlas = ExtResource("2_v54k3")
@@ -460,3 +461,7 @@ shape = SubResource("CircleShape2D_q277p")
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Hit_Box"]
 shape = SubResource("CircleShape2D_rlheg")
+
+[node name="Drone" parent="." instance=ExtResource("6_brd4h")]
+position = Vector2(-41, -9)
+scale = Vector2(0.03, 0.033)

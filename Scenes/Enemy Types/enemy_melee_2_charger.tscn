@@ -441,6 +441,7 @@ size = Vector2(11, 14)
 
 [node name="Enemy_Melee_2_Charger" type="RigidBody2D" node_paths=PackedStringArray("hit_box", "range") groups=["enemy"]]
 modulate = Color(1, 0, 1, 1)
+collision_layer = 2
 lock_rotation = true
 script = ExtResource("1_2enu2")
 target_group = "player"
