@@ -111,8 +111,12 @@ func do_dash():
 			
 func _on_dash_timer_timeout():
 	if is_dashing:
-		collision_layer = 1
-		collision_mask = 1
+		if is_in_group("player"):
+			collision_layer = 1
+			collision_mask = 1
+		else:
+			collision_layer = 2
+			collision_mask = 1
 		is_dashing = false
 		for body in dash_collisions:
 			body.apply_damage(5 * base_damage_multiplayer)

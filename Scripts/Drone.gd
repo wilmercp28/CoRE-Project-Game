@@ -61,7 +61,6 @@ func shootBullets():
 	can_shoot = false
 	fire_rate_timer.start(bullet_instance.fire_rate)
 	
-
 func get_closest_enemy():
 	var enemies = get_tree().get_nodes_in_group("enemy")
 	for enemy in enemies:
